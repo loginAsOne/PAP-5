@@ -1,0 +1,37 @@
+# cargo-deny configuration — supply-chain policy.
+# Policy rationale: docs/dependency-policy.md
+
+[graph]
+all-features = true
+
+[advisories]
+# Fails on any crate with a known vulnerability or unmaintained advisory.
+# Separate dir so cargo-audit can own its default ~/.cargo/advisory-db clone.
+db-path = "~/.cargo/deny-advisory-db"
+yanked = "deny"
+
+[licenses]
+# Workspace crates are dual MIT OR Apache-2.0; dependencies must be
+# permissive. Add licenses here only per docs/dependency-policy.md.
+# ponytail: minimal allow-list; extend per docs/dependency-policy.md as real
+# deps are added (deny warns on allow entries no crate in the tree uses).
+allow = [
+    "MIT",
+    "Apache-2.0",
+]
+confidence-threshold = 0.8
+
+[bans]
+# One version of each crate in the tree; exceptions require an entry here
+# with a comment explaining why the duplication is acceptable.
+multiple-versions = "deny"
+wildcards = "deny"
+skip = []
+deny = []
+
+[sources]
+# Crates may only come from crates.io. No git/path forks of published
+# crates without a documented exception in docs/dependency-policy.md.
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]

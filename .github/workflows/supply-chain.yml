@@ -1,0 +1,27 @@
+name: supply-chain
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  # Re-scan the lockfile weekly so newly published advisories fail CI
+  # even when the code has not changed.
+  schedule:
+    - cron: "17 5 * * 1"
+
+jobs:
+  deny:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          command: check advisories licenses bans sources
+
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: rustsec/audit-check@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
